@@ -6,27 +6,177 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wdth@90&display=swap" rel="stylesheet">
     <link href='style.css' rel="stylesheet">
+	<script src="PapaParse/papaparse.min.js"></script>
+    <script type="text/javascript" src="fonctions.js"></script>
+    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> -->
 </head>
 
 <body>
+    <input type="file" id="uploadfile" accept=".csv">
+    <button id="upconfirm">Charger fichier</button>
+    
     <h1 class='centered'>Site des abeilles</h1>
     <div class='okok oui'>
-        <p class="centered">Est-ce que ceci est un &lsaquo;amal&rsaquo;</p>
-        <img src="./images/Chat/chat1.jpg" height="200px" width="300px" class="centered">	
+        <p class="centered">Est-ce que ceci est un &lsaquo;<b id="modif">animal</b>&rsaquo;</p>
+        <img id="image" src="./images/debut.png" height="200px" width="300px" class="centered">	
         
         <div style="width: 90%; overflow: hidden; margin-bottom: 3em; height: 100px;" class="oui">
             <div class="1" style="width: 45%; float: left;"> 
-                <button>&lsaquo;</button>
+                <button id="l">&lsaquo;</button>
             </div>
             <div class="2" style="width:50%; margin-left: 40%;"> 
-                <button>oui</button>
-                <button>non</button>
+                <button id="oui">oui</button>
+                <button id="non">non</button>
                 <div style="float: right;">
-                    <button>&rsaquo;</button>
+                    <button id="r">&rsaquo;</button>
                 </div>
             </div>
        </div>
     </div>
 
+    <div style="height: 20px;"></div>
+    <div class="oui" style="height: 20px;">       
+        <button id="downconfirm" style="float: right;" >Télécharger fichier corrigé</button>
+    </div>
 </body>
+<script type="text/javascript">
+    // On renvoie un nombre aléatoire entre une valeur min (incluse)
+    // et une valeur max (exclue)
+    function getRandomArbitrary(min, max) {
+      return Math.floor( Math.random() * (max - min) + min);
+  }
+  function getRandomInt(max) {
+      return Math.floor( Math.random() * max);
+  }
+  function getKeyByValue(object, value) {
+      return Object.keys(object).find(key => object[key] === value);
+  }
+  
+  var label, imActuelle, indice;
+  var tab_connaissances=[];
+  // var object = new ActiveXObject("Scripting.FileSystemObject"); // ne marche que sur IE :(
+
+  const image = document.getElementById('image').
+  addEventListener('load', () => { //calcule le nouvel indice, trouve label et chemin de l'image
+      imActuelle=document.getElementById('image').getAttribute("src");
+      let i=0;
+      while ( imActuelle!=tab_connaissances[i][1] && i < tab_connaissances.length) i++;
+      indice=i
+      label = tab_connaissances[i][0];
+      console.log("Label : ",label);
+      console.log("Image : ",imActuelle);
+       
+  });
+
+  const upconfirm = document.getElementById('upconfirm').
+  addEventListener('click', () => { //parse le csv pour le transformer en variable exploitable
+  Papa.parse(document.getElementById('uploadfile').files[0],
+  {
+      delimiter: ";",
+      download: false,
+      header: false,
+      skipEmptyLines: true,
+      complete: function(results){
+          // console.log(results);  
+          for (let i = 1 ; i < results['data'].length; i++) {
+
+              tab_connaissances[i-1]=[...results['data'][i]];
+              // tab_connaissances.push([results['data'][i][0],results['data'][i][1]]);
+          }
+          console.log(tab_connaissances);
+          document.getElementById('modif').innerHTML=tab_connaissances[0][0];
+          document.getElementById('image').src=tab_connaissances[0][1];
+      }
+  });
+});
+
+// TODO : télécharger le fichier CSV à partir du nouveau tableau de connaissances 
+const downconfirm= document.getElementById('downconfirm').
+  addEventListener('click', () => { //parse le csv pour le transformer en variable exploitable
+  var csv = Papa.unparse(tab_connaissances,
+  {
+      download: false,
+      header: false,
+      skipEmptyLines: true, 
+  });
+  console.log('Label,Images\n'.concat(csv));
+  csv = 'Label,Images\n'.concat(csv);
+  // console.log(csv.concat'Label,Images')
+  console.log(csv);
+});
+
+const oui = document.getElementById("oui").
+  addEventListener('click', () => {
+      var rand,image;
+      rand = getRandomInt(tab_connaissances.length);
+      image = document.getElementById("image").getAttribute('src');
+      console.log(tab_connaissances[rand][1],image);
+      while ( tab_connaissances[rand][1] == image) //pour éviter de tomber 2 fois sur la même image
+      {
+          console.log("meme image");
+          rand=getRandomInt(tab_connaissances.length);
+      }
+      document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
+      document.getElementById("image").src=tab_connaissances[rand][1];
+  });
+
+  const l = document.getElementById("l"). // bouton <
+  addEventListener('click', () => {
+      var image;
+      
+      image = document.getElementById("image").getAttribute('src');
+      
+      if (indice-1 < 0) indice = tab_connaissances.length-1;
+      else indice--;
+      document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
+      document.getElementById("image").src=tab_connaissances[indice][1];
+  });
+
+  const r = document.getElementById("r"). // bouton >
+  addEventListener('click', () => {
+      var image;
+      
+      image = document.getElementById("image").getAttribute('src');
+      
+      if (indice+1 >= tab_connaissances.length) indice = 0;
+      else indice++;
+      document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
+      document.getElementById("image").src=tab_connaissances[indice][1];
+  });
+
+  const non = document.getElementById("non").
+  addEventListener('click', () => { // TODO : changer fichiers de dossier
+      
+      console.log(label);
+      
+      if(label.toString().localeCompare("chien")==0) tab_connaissances[indice][0]="chat"; // que 2 labels donc modif manuelle pour l'instant
+      else tab_connaissances[indice][0]="chien";
+
+      console.log(tab_connaissances);
+      
+//         function moveFile(){
+//    var object = new ActiveXObject("Scripting.FileSystemObject");
+//    var file = object.GetFile("C:\\wamp\\www\\phptest.php");
+//    file.Move("C:\\wamp\\");
+//    document.write("File is moved successfully");
+// }
+      // var myObject;
+      // myObject = new ActiveXObject("Scripting.FileSystemObject");
+      // myObject.MoveFile("./images/Chat/chat1.jpg", "./images/Chien/chat1.jpg");
+
+      var rand,image;
+      rand = getRandomInt(tab_connaissances.length);
+      image = document.getElementById("image").getAttribute('src');
+      console.log(tab_connaissances[rand][1],image);
+      while ( tab_connaissances[rand][1] == image) //pour éviter de tomber 2 fois sur la même image
+      {
+          console.log("meme image");
+          rand=getRandomInt(tab_connaissances.length);
+      }
+      document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
+      document.getElementById("image").src=tab_connaissances[rand][1];
+  });
+</script>
 </html>
