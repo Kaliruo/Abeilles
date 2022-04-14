@@ -1,0 +1,22 @@
+Oversimple
+Intersimple
+decision tree
+Classificateur :
+	decision tree (geni algorithme) 
+	random forest 
+	great search
+	regression logistique
+	SVN : -> Meilleurs résultat (plus rapide en temps réel)
+	KNN -> 
+	Rend of oras
+	CNN : Vege Architecture (meilleurs résultats)
+		maxpooling
+		Dropout
+		Conv2D
+		Flattend
+		Dense
+		1000 epoch (seulement 300 suffise)
+data desequilibre -> 
+accuracy 
+
+maxpooling : 
