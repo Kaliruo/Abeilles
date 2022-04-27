@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tests Abey</title>
+    <title>Abey</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wdth@90&display=swap" rel="stylesheet">
@@ -14,31 +14,45 @@
 </head>
 
 <body>
-    <input type="file" id="uploadfile" accept=".csv">
-    <button id="upconfirm">Charger fichier</button>
-    
     <h1 class='centered'>Site des abeilles</h1>
     <div class='okok oui'>
         <p class="centered">Est-ce que ceci est un &lsaquo;<b id="modif">animal</b>&rsaquo;</p>
         <img id="image" src="./images/debut.png" height="200px" width="300px" class="centered">	
         
         <div style="width: 90%; overflow: hidden; margin-bottom: 3em; height: 100px;" class="oui">
-            <div class="1" style="width: 45%; float: left;"> 
-                <button id="l">&lsaquo;</button>
-            </div>
-            <div class="2" style="width:50%; margin-left: 40%;"> 
-                <button id="oui">oui</button>
-                <button id="non">non</button>
-                <div style="float: right;">
-                    <button id="r">&rsaquo;</button>
+            <div style="height: 20px;"></div>
+            <div class="flex">
+                <div style="width: 44%;"> <!-- purement arbitraire et peut casser à tout moment :) -->
+                    <button id="l" class="myButton">&lsaquo;</button>
+                </div>
+                <div style="width: 7%;">
+                    <button id="oui" class="myButton">oui</button>
+                </div>
+                <div style="width: 44%;">
+                    <button id="non" class="myButton">non</button>
+                </div>   
+                <div style="width: 5%;">
+                    <button id="r" class="myButton">&rsaquo;</button>
                 </div>
             </div>
        </div>
     </div>
 
     <div style="height: 20px;"></div>
-    <div class="oui" style="height: 20px;">       
-        <button id="downconfirm" style="float: right;" >Télécharger fichier corrigé</button>
+    <div class="oui">       
+        <a href="./about.html"><button class="myButton" id="about" style="float: left;" >A propos de nous</button></a>
+        <button class="myButton" id="downconfirm" style="float: right;" >Télécharger fichier corrigé</button>
+    </div>
+    <div style="height: 15px;"></div>
+    <div class="oui">
+        <h3 class="centered">Sélectionnez un fichier csv que vous chargerez pour effectuer des vérifications :</h3>
+        <div class="flex">
+            <label for="uploadfile" class="myButton centered" >
+                Choisissez un fichier
+            </label>
+            <input id="uploadfile" type="file" accept=".csv"/>
+        </div>
+        <button id="upconfirm" style="visibility: hidden;"></button>
     </div>
 </body>
 <script type="text/javascript">
@@ -60,14 +74,24 @@
 
   const image = document.getElementById('image').
   addEventListener('load', () => { //calcule le nouvel indice, trouve label et chemin de l'image
+
       imActuelle=document.getElementById('image').getAttribute("src");
-      let i=0;
-      while ( imActuelle!=tab_connaissances[i][1] && i < tab_connaissances.length) i++;
-      indice=i
-      label = tab_connaissances[i][0];
-      console.log("Label : ",label);
-      console.log("Image : ",imActuelle);
+      if (!imActuelle.includes('debut')){
+          let i=0;
+          while ( imActuelle!=tab_connaissances[i][1] && i < tab_connaissances.length) i++;
+          indice=i
+          label = tab_connaissances[i][0];
+          console.log("Label : ",label);
+          console.log("Image : ",imActuelle);
+      }
        
+  });
+
+  //pour ne pas avoir à passer par un bouton "charger fichier" 
+  const loaded = document.getElementById('uploadfile').
+  addEventListener('input', () => {
+        var confirm = document.getElementById('upconfirm');
+        confirm.click();
   });
 
   const upconfirm = document.getElementById('upconfirm').
@@ -84,6 +108,7 @@
           for (let i = 1 ; i < results['data'].length; i++) {
 
               tab_connaissances[i-1]=[...results['data'][i]];
+              tab_connaissances[i-1][1]= tab_connaissances[i-1][1].replace('\r','');
               // tab_connaissances.push([results['data'][i][0],results['data'][i][1]]);
           }
           console.log(tab_connaissances);

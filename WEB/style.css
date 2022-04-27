@@ -9,19 +9,73 @@ body{
     height: 400px;
     border: solid black 1pt; 
 }
+
 .centered{
     text-align: center;
+}
+label.centered{
+    text-align: center;
+    margin:auto;
+    display:flex;
 }
 img.centered{
     text-align:center;
     margin:auto;
     display:flex;
 }
+.flex{
+    display: flex;
+    /* display: inline-block; */
+}
+.flex-child {
+    /* flex: 1; */
+    border: 2px solid yellow;
+}  
 
+.flex-child:first-child {
+    margin-right: 20px;
+} 
+
+.agauche{
+    /* margin-left: 0;
+    margin-right: auto; */
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.adroite{
+    /* margin-left: auto;
+    margin-right: 0; */
+    flex-direction: row;
+    justify-content: flex-end;
+}
 button.centered{
     text-align:center;
     margin:auto;
     display:flex;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.myButton {
+	background-color:#828282;
+	border-radius:28px;
+	border:1px solid #000f02;
+	display:inline-block;
+	cursor:pointer;
+	color:#000000;
+	/* font-size:17px; */
+	padding:7px 15px;
+	text-decoration:none;
+	/* text-shadow:0px 1px 0px #ffffff; */
+}
+.myButton:hover {
+	background-color: whitesmoke;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
 }
 
 .oui{
