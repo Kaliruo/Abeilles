@@ -75,6 +75,7 @@
   Papa.parse(document.getElementById('uploadfile').files[0],
   {
       delimiter: ";",
+    //   newline: "\n\r", // trouver un moyen d'enlever les \r qui s'ajoutent à la fin des chemins des photos
       download: false,
       header: false,
       skipEmptyLines: true,
@@ -92,19 +93,39 @@
   });
 });
 
-// TODO : télécharger le fichier CSV à partir du nouveau tableau de connaissances 
 const downconfirm= document.getElementById('downconfirm').
   addEventListener('click', () => { //parse le csv pour le transformer en variable exploitable
   var csv = Papa.unparse(tab_connaissances,
   {
       download: false,
       header: false,
+      newline : "\n",
+      delimiter : ';',
       skipEmptyLines: true, 
   });
-  console.log('Label,Images\n'.concat(csv));
-  csv = 'Label,Images\n'.concat(csv);
-  // console.log(csv.concat'Label,Images')
-  console.log(csv);
+  if (csv) // pas de dl si le csv n'existe pas
+  {
+    csv = 'Label;Images\n'.concat(csv); 
+
+    var csvData = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+    var csvURL =  null;
+    if (navigator.msSaveBlob)
+    {
+        csvURL = navigator.msSaveBlob(csvData, 'label_new.csv');
+    }
+    else
+    {
+        csvURL = window.URL.createObjectURL(csvData);
+    }
+
+    var tempLink = document.createElement('a');
+    console.log(csvURL);
+    tempLink.href = csvURL;
+    tempLink.setAttribute('download', 'label_new.csv');
+    tempLink.click();
+  }
+else { console.log("Le csv n'a pas encore été chargé !");}
+
 });
 
 const oui = document.getElementById("oui").
@@ -147,7 +168,7 @@ const oui = document.getElementById("oui").
   });
 
   const non = document.getElementById("non").
-  addEventListener('click', () => { // TODO : changer fichiers de dossier
+  addEventListener('click', () => {
       
       console.log(label);
       
