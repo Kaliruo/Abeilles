@@ -8,9 +8,6 @@
     <link href='style.css' rel="stylesheet">
 	<script src="PapaParse/papaparse.min.js"></script>
     <script type="text/javascript" src="fonctions.js"></script>
-    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script> -->
 </head>
 
 <body>
@@ -70,19 +67,22 @@
   
   var label, imActuelle, indice;
   var tab_connaissances=[];
-  // var object = new ActiveXObject("Scripting.FileSystemObject"); // ne marche que sur IE :(
+  var labels=[]; 
+  var debug = false; // si == true affiche des informations sur le tableau de connaissances et chaque image traitée en cours
 
   const image = document.getElementById('image').
   addEventListener('load', () => { //calcule le nouvel indice, trouve label et chemin de l'image
 
       imActuelle=document.getElementById('image').getAttribute("src");
-      if (!imActuelle.includes('debut')){
+      if (!imActuelle.includes("debut")){
           let i=0;
           while ( imActuelle!=tab_connaissances[i][1] && i < tab_connaissances.length) i++;
           indice=i
           label = tab_connaissances[i][0];
-          console.log("Label : ",label);
-          console.log("Image : ",imActuelle);
+          if (debug){
+              console.log("Label : ",label);
+              console.log("Image : ",imActuelle);
+          }
       }
        
   });
@@ -99,19 +99,21 @@
   Papa.parse(document.getElementById('uploadfile').files[0],
   {
       delimiter: ";",
-    //   newline: "\n\r", // trouver un moyen d'enlever les \r qui s'ajoutent à la fin des chemins des photos
       download: false,
       header: false,
       skipEmptyLines: true,
       complete: function(results){
-          // console.log(results);  
           for (let i = 1 ; i < results['data'].length; i++) {
 
               tab_connaissances[i-1]=[...results['data'][i]];
               tab_connaissances[i-1][1]= tab_connaissances[i-1][1].replace('\r','');
-              // tab_connaissances.push([results['data'][i][0],results['data'][i][1]]);
+              labels.push(tab_connaissances[i-1][0]);
           }
-          console.log(tab_connaissances);
+          labels = [...new Set(labels)]; //élimination des labels dupliqués
+          if (debug){
+              console.log("Images et leurs labels : ",tab_connaissances);
+              console.log("Tous les labels : ",labels);
+          }
           document.getElementById('modif').innerHTML=tab_connaissances[0][0];
           document.getElementById('image').src=tab_connaissances[0][1];
       }
@@ -144,7 +146,6 @@ const downconfirm= document.getElementById('downconfirm').
     }
 
     var tempLink = document.createElement('a');
-    console.log(csvURL);
     tempLink.href = csvURL;
     tempLink.setAttribute('download', 'label_new.csv');
     tempLink.click();
@@ -155,74 +156,70 @@ else { console.log("Le csv n'a pas encore été chargé !");}
 
 const oui = document.getElementById("oui").
   addEventListener('click', () => {
-      var rand,image;
+      var rand;
       rand = getRandomInt(tab_connaissances.length);
-      image = document.getElementById("image").getAttribute('src');
-      console.log(tab_connaissances[rand][1],image);
-      while ( tab_connaissances[rand][1] == image) //pour éviter de tomber 2 fois sur la même image
-      {
-          console.log("meme image");
-          rand=getRandomInt(tab_connaissances.length);
+      imActuelle = document.getElementById("image").getAttribute('src');
+      if (!imActuelle.includes("debut")){
+          while ( tab_connaissances[rand][1] == imActuelle) //pour éviter de tomber 2 fois sur la même image
+          {
+              rand=getRandomInt(tab_connaissances.length);
+          }
+          document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
+          document.getElementById("image").src=tab_connaissances[rand][1];
       }
-      document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
-      document.getElementById("image").src=tab_connaissances[rand][1];
+      else{
+          console.log("Le csv n'a pas encore été chargé !");
+      }
   });
 
   const l = document.getElementById("l"). // bouton <
   addEventListener('click', () => {
-      var image;
-      
-      image = document.getElementById("image").getAttribute('src');
-      
-      if (indice-1 < 0) indice = tab_connaissances.length-1;
-      else indice--;
-      document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
-      document.getElementById("image").src=tab_connaissances[indice][1];
+      if (!imActuelle.includes("debut")){
+          if (indice-1 < 0) indice = tab_connaissances.length-1;
+          else indice--;
+          document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
+          document.getElementById("image").src=tab_connaissances[indice][1];
+      }
+      else{
+        console.log("Le csv n'a pas encore été chargé !");
+      }
   });
 
   const r = document.getElementById("r"). // bouton >
   addEventListener('click', () => {
-      var image;
-      
-      image = document.getElementById("image").getAttribute('src');
-      
-      if (indice+1 >= tab_connaissances.length) indice = 0;
-      else indice++;
-      document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
-      document.getElementById("image").src=tab_connaissances[indice][1];
+      if (!imActuelle.includes("debut")){
+          if (indice+1 >= tab_connaissances.length) indice = 0;
+          else indice++;
+          document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
+          document.getElementById("image").src=tab_connaissances[indice][1];
+        }
+        else{
+            console.log("Le csv n'a pas encore été chargé !");
+        }
   });
 
   const non = document.getElementById("non").
   addEventListener('click', () => {
-      
-      console.log(label);
-      
-      if(label.toString().localeCompare("chien")==0) tab_connaissances[indice][0]="chat"; // que 2 labels donc modif manuelle pour l'instant
-      else tab_connaissances[indice][0]="chien";
-
-      console.log(tab_connaissances);
-      
-//         function moveFile(){
-//    var object = new ActiveXObject("Scripting.FileSystemObject");
-//    var file = object.GetFile("C:\\wamp\\www\\phptest.php");
-//    file.Move("C:\\wamp\\");
-//    document.write("File is moved successfully");
-// }
-      // var myObject;
-      // myObject = new ActiveXObject("Scripting.FileSystemObject");
-      // myObject.MoveFile("./images/Chat/chat1.jpg", "./images/Chien/chat1.jpg");
-
-      var rand,image;
-      rand = getRandomInt(tab_connaissances.length);
-      image = document.getElementById("image").getAttribute('src');
-      console.log(tab_connaissances[rand][1],image);
-      while ( tab_connaissances[rand][1] == image) //pour éviter de tomber 2 fois sur la même image
-      {
-          console.log("meme image");
-          rand=getRandomInt(tab_connaissances.length);
-      }
-      document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
-      document.getElementById("image").src=tab_connaissances[rand][1];
+      if (!imActuelle.includes("debut")){
+          var rand;
+          rand = getRandomInt(tab_connaissances.length);
+          if(label.toString().localeCompare(labels[0])==0) tab_connaissances[indice][0]=labels[1]; // que 2 labels donc modif manuelle pour l'instant
+          else tab_connaissances[indice][0]=labels[0];
+          
+          if (debug){
+              console.log(tab_connaissances);
+          } 
+          
+          while ( tab_connaissances[rand][1] == imActuelle) //pour éviter de tomber 2 fois sur la même image
+          {
+              rand=getRandomInt(tab_connaissances.length);
+          }
+          document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
+          document.getElementById("image").src=tab_connaissances[rand][1];
+        }
+        else{
+            console.log("Le csv n'a pas encore été chargé !");
+        }
   });
 </script>
 </html>
