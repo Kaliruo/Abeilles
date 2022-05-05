@@ -13,7 +13,7 @@
 <body>
     <h1 class='centered'>Site des abeilles</h1>
     <div class='okok oui'>
-        <p class="centered">Est-ce que ceci est un &lsaquo;<b id="modif">animal</b>&rsaquo;</p>
+        <p id="modif" class="centered">&nbsp;</p>
         <img id="image" src="./images/debut.png" height="200px" width="300px" class="centered">	
         
         <div style="width: 90%; overflow: hidden; margin-bottom: 3em; height: 100px;" class="oui">
@@ -49,13 +49,15 @@
             </label>
             <input id="uploadfile" type="file" accept=".csv"/>
         </div>
+        <h4 class="centered">(Pour plus d'informations sur les images CTRL + SHIFT + I)</h4>
         <button id="upconfirm" style="visibility: hidden;"></button>
     </div>
 </body>
 <script type="text/javascript">
     // On renvoie un nombre aléatoire entre une valeur min (incluse)
     // et une valeur max (exclue)
-    function getRandomArbitrary(min, max) {
+  console.log("Pour activer / désactiver le mode débug:\ndebug = true / debug = false");
+  function getRandomArbitrary(min, max) {
       return Math.floor( Math.random() * (max - min) + min);
   }
   function getRandomInt(max) {
@@ -114,7 +116,7 @@
               console.log("Images et leurs labels : ",tab_connaissances);
               console.log("Tous les labels : ",labels);
           }
-          document.getElementById('modif').innerHTML=tab_connaissances[0][0];
+          document.getElementById('modif').innerHTML="Est-ce que ceci est un / une &lsaquo;<b>"+tab_connaissances[0][0]+"</b>&rsaquo;";
           document.getElementById('image').src=tab_connaissances[0][1];
       }
   });
@@ -164,7 +166,7 @@ const oui = document.getElementById("oui").
           {
               rand=getRandomInt(tab_connaissances.length);
           }
-          document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
+          document.getElementById("modif").innerHTML="Est-ce que ceci est un / une &lsaquo;<b>"+tab_connaissances[rand][0]+"</b>&rsaquo;";
           document.getElementById("image").src=tab_connaissances[rand][1];
       }
       else{
@@ -177,7 +179,7 @@ const oui = document.getElementById("oui").
       if (!imActuelle.includes("debut")){
           if (indice-1 < 0) indice = tab_connaissances.length-1;
           else indice--;
-          document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
+          document.getElementById("modif").innerHTML="Est-ce que ceci est un / une &lsaquo;<b>"+tab_connaissances[indice][0]+"</b>&rsaquo;";
           document.getElementById("image").src=tab_connaissances[indice][1];
       }
       else{
@@ -190,7 +192,7 @@ const oui = document.getElementById("oui").
       if (!imActuelle.includes("debut")){
           if (indice+1 >= tab_connaissances.length) indice = 0;
           else indice++;
-          document.getElementById("modif").innerHTML=tab_connaissances[indice][0];
+          document.getElementById("modif").innerHTML="Est-ce que ceci est un / une &lsaquo;<b>"+tab_connaissances[indice][0]+"</b>&rsaquo;";
           document.getElementById("image").src=tab_connaissances[indice][1];
         }
         else{
@@ -214,7 +216,7 @@ const oui = document.getElementById("oui").
           {
               rand=getRandomInt(tab_connaissances.length);
           }
-          document.getElementById("modif").innerHTML=tab_connaissances[rand][0];
+          document.getElementById("modif").innerHTML="Est-ce que ceci est un / une &lsaquo;<b>"+tab_connaissances[rand][0]+"</b>&rsaquo;";
           document.getElementById("image").src=tab_connaissances[rand][1];
         }
         else{
